@@ -19,16 +19,13 @@ aqQueryAnalyzer::aqQueryAnalyzer(wxWindow * parent, const std::string& query, aq
   wxTextCtrl * aqlQuery = new wxTextCtrl(splitter, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
   splitter->SetSashGravity(0.5);
 
-  aq::SQLParse(query.c_str(), tree);
-
-  aq::core::SelectStatement ss;
-  aq::util::tnodeToSelectStatement(*tree, ss);
-
-  //*sqlQuery << aq::multiline_query(aq::syntax_tree_to_sql_form(tree));
-  //*aqlQuery << aq::multiline_query(aq::syntax_tree_to_aql_form(tree));
-
-  *sqlQuery << ss.to_string(aq::core::SelectStatement::output_t::SQL);
-  *aqlQuery << ss.to_string(aq::core::SelectStatement::output_t::AQL);
+  if (aq::SQLParse(query.c_str(), tree) == 0)
+  {
+    aq::core::SelectStatement ss;
+    aq::util::tnodeToSelectStatement(*tree, ss);
+    *sqlQuery << ss.to_string(aq::core::SelectStatement::output_t::SQL);
+    *aqlQuery << ss.to_string(aq::core::SelectStatement::output_t::AQL);
+  }
 
   b->Add(splitter, 1, wxALL | wxEXPAND, 0);
   this->SetSizer(b);

@@ -6,12 +6,6 @@
 #include <aq/AQEngine.h>
 #include <sstream>
 
-int yyerror(char const * WXUNUSED(error))
-{
-  // TODO
-  return 0;
-}
-
 namespace aq {
 namespace gui {
 
