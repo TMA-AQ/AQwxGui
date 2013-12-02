@@ -5,7 +5,11 @@
 using namespace aq::gui;
 
 aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-  : wxFrame(nullptr, -1, title, pos, size), settingsFrame(nullptr), settings(nullptr)
+  : 
+  wxFrame(nullptr, -1, title, pos, size), 
+  logsFrame(nullptr),
+  settingsFrame(nullptr), 
+  settings(nullptr)
 {
   
   //
@@ -19,6 +23,7 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
   menuFile->Append(ID_Open, _("&Open"));
   menuFile->Append(ID_Connect, _("&Connect"));
   menuFile->Append(ID_Properties, _("&Properties"));
+  menuFile->Append(ID_Logs, _("&Logs"));
   menuFile->AppendSeparator();
   menuFile->Append(ID_About, _("&About"));
   menuFile->AppendSeparator();
@@ -27,6 +32,7 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnOpen, this, ID_Open);
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnConnect, this, ID_Connect);
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnProperties, this, ID_Properties);
+  menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnLogs, this, ID_Logs);
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnAbout, this, ID_About);
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnQuit, this, ID_Quit);
 
@@ -35,6 +41,9 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 
   this->SetMenuBar(menuBar);
   
+  // Logs
+  this->logsFrame = new aqLogsFrame(this);
+
   //
   wxBoxSizer * box = new wxBoxSizer(wxHORIZONTAL);
   wxSplitterWindow * splitter = new wxSplitterWindow(this, wxID_ANY);
@@ -46,8 +55,6 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
   splitter->SplitVertically(db, qe, 10);
   this->SetSizer(box);
 
-  //std::cout << "test std::cout" << std::endl;
-  //printf("test printf\n");
 
   // Status Bar
   this->CreateStatusBar();
@@ -63,7 +70,13 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 
 aqMainFrame::~aqMainFrame()
 {
-  delete vb;
+  if (vb != nullptr)
+    delete vb;
+  if (logsFrame != nullptr)
+  {
+    logsFrame->Hide();
+    delete logsFrame;
+  }
 }
 
 void aqMainFrame::setStatusBar(const std::string& msg)
@@ -90,6 +103,12 @@ void aqMainFrame::OnProperties(wxCommandEvent& event)
     this->settingsFrame->SetSizer(box);
   }
   this->settingsFrame->Show();
+}
+
+void aqMainFrame::OnLogs(wxCommandEvent& WXUNUSED(event))
+{
+  if (logsFrame != nullptr)
+    logsFrame->Show();
 }
 
 void aqMainFrame::OnQuit(wxCommandEvent& WXUNUSED(event))

@@ -12,7 +12,7 @@ namespace gui {
   };
 
   aqDBExplorer::aqDBExplorer(wxWindow * parent, aqMainFrame * _mf, aqQueryExec * _qe)
-    : wxTreeCtrl(parent, wxID_ANY), mf(_mf), qe(_qe)
+    : wxTreeCtrl(parent, wxID_ANY), mf(_mf), qe(_qe), selectedItem(nullptr)
   {
     
     this->AddRoot(_("Databases"));
@@ -66,14 +66,35 @@ namespace gui {
 
   void aqDBExplorer::OnMouseClick(wxTreeEvent& evt)
   {
-    // wxTreeItemId id = this->GetSelection();
     aqTreeItemData * data = dynamic_cast<aqTreeItemData*>(this->GetItemData(evt.GetItem()));
     if (data != nullptr)
     {
-      this->SelectItem(evt.GetItem());
-      qe->setDatabase(data->name);
-      this->mf->setStatusBar("Connected to " + data->name);
+      wxMenu menu;
+      menu.SetClientData(&evt);
+      menu.Append(menu_t::ID_Connect, _("Connect"));
+      menu.Append(menu_t::ID_Import, _("Import"));
+      menu.Append(menu_t::ID_Export, _("Export"));
+      menu.Append(menu_t::ID_Check, _("Check"));
+      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, &aqDBExplorer::OnPopupClick, this, wxID_ANY);
+      this->PopupMenu(&menu);
+      this->SelectItem(this->selectedItem);
+      this->SetItemBold(this->selectedItem);
     }
+  }
+  
+  void aqDBExplorer::OnPopupClick(wxCommandEvent& evt)
+  {
+    wxMenu * menu = static_cast<wxMenu*>(evt.GetEventObject());
+    wxTreeEvent * treeEvt = static_cast<wxTreeEvent*>(menu->GetClientData());
+    aqTreeItemData * data = static_cast<aqTreeItemData*>(this->GetItemData(treeEvt->GetItem()));
+    assert(data != nullptr);
+    qe->setDatabase(data->name);
+    this->mf->setStatusBar("Connected to " + data->name);
+    if (this->selectedItem != nullptr)
+    {
+      this->SetItemBold(this->selectedItem, false);
+    }
+    selectedItem = treeEvt->GetItem();
   }
 
 }

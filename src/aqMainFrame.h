@@ -1,4 +1,5 @@
 #include "aqSettings.h"
+#include "aqLogsFrame.h"
 #include "VerbBuilder.h"
 #include <wx/wx.h>
 
@@ -18,11 +19,13 @@ protected:
   void OnOpen(wxCommandEvent& event);
   void OnConnect(wxCommandEvent& event);
   void OnProperties(wxCommandEvent& event);
+  void OnLogs(wxCommandEvent& event);
   void OnQuit(wxCommandEvent& event);
   void OnAbout(wxCommandEvent& event);
 
 private:
   wxFrame * settingsFrame;
+  aqLogsFrame * logsFrame;
   aqSettings * settings;
   aq::VerbBuilder * vb;
 };
@@ -32,6 +35,7 @@ enum
   ID_Quit = 1,
   ID_Connect,
   ID_Properties,
+  ID_Logs,
   ID_Open,
   ID_About,
 };

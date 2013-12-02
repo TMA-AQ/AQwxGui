@@ -1,5 +1,6 @@
 #include "aqQueryExec.h"
 #include "aqResultHandler.h"
+#include "aqQueryAnalyzer.h"
 #include <aq/Base.h>
 #include <aq/QueryResolver.h>
 #include <aq/AQEngine.h>
@@ -37,10 +38,12 @@ namespace gui {
 
     this->splitter->SplitHorizontally(this->pan1, this->pan2, this->GetSize().GetHeight() / 2); // FIXME : should be the panel size (and not the parent)
     this->splitter->Unsplit();
-
-    wxButton * runButton = new wxButton(this, wxID_OK, _("run"));
+    
+    wxButton * analyzeButton = new wxButton(this, ID_Analyze, _("analyze"));
+    wxButton * runButton = new wxButton(this, ID_Ok, _("run"));
 
     box->Add(splitter, 1, wxEXPAND | wxALL, 10);
+    box->Add(analyzeButton, 0, wxRIGHT | wxBOTTOM | wxALIGN_RIGHT, 10);
     box->Add(runButton, 0, wxRIGHT | wxBOTTOM | wxALIGN_RIGHT, 10);
 
     // wxStreamToTextRedirector * redirect = new wxStreamToTextRedirector(this->sqlQuery);
@@ -51,10 +54,23 @@ namespace gui {
       this->root = s;
     }
 
-    this->Bind(wxEVT_BUTTON, &aqQueryExec::OnRun, this, wxID_OK);
+    this->Bind(wxEVT_BUTTON, &aqQueryExec::OnAnalyze, this, ID_Analyze);
+    this->Bind(wxEVT_BUTTON, &aqQueryExec::OnRun, this, ID_Ok);
 
     this->SetSizer(box);
     box->SetSizeHints(this);
+  }
+  
+  void aqQueryExec::OnAnalyze(wxCommandEvent& WXUNUSED(e))
+  {
+    wxFrame * frame = new wxFrame(this, wxID_ANY, _("Query Analyzer"));
+    wxBoxSizer * b = new wxBoxSizer(wxVERTICAL);
+    aqQueryAnalyzer * qa = new aqQueryAnalyzer(frame, this->sqlQuery->GetValue().ToStdString());
+    b->Add(qa, 1, wxALL | wxEXPAND, 0);
+    frame->SetSizer(b);
+    frame->SetSize(wxSize(1200, 600));
+    frame->Centre();
+    frame->Show();
   }
 
   void aqQueryExec::OnRun(wxCommandEvent& WXUNUSED(e))

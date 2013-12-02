@@ -12,9 +12,16 @@ namespace gui {
   class aqQueryExec : public wxPanel
   {
   public:
+    enum button_t
+    {
+      ID_Analyze,
+      ID_Ok,
+    };
+  public:
     aqQueryExec(wxWindow * parent);
     void setDatabase(const std::string& _database) { this->database = _database; }
   protected:
+    void OnAnalyze(wxCommandEvent& e);
     void OnRun(wxCommandEvent& e);
     
   private:
