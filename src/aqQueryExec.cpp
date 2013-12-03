@@ -1,6 +1,7 @@
 #include "aqQueryExec.h"
 #include "aqResultHandler.h"
 #include "aqQueryAnalyzer.h"
+#include "aqSyntaxColor.h"
 #include <aq/Base.h>
 #include <aq/QueryResolver.h>
 #include <aq/AQEngine.h>
@@ -59,8 +60,17 @@ namespace gui {
     box->SetSizeHints(this);
   }
   
+  void aqQueryExec::setQuery(const std::string& query) 
+  { 
+    this->sqlQuery->SetValue(query);
+    aqSQLSyntaxColor sc;
+    sc.colorize(this->sqlQuery);
+  }
+
   void aqQueryExec::OnAnalyze(wxCommandEvent& WXUNUSED(e))
   {
+    aqSQLSyntaxColor sc;
+    sc.colorize(this->sqlQuery);
     wxFrame * frame = new wxFrame(this, wxID_ANY, _("Query Analyzer"));
     wxBoxSizer * b = new wxBoxSizer(wxVERTICAL);
     aqQueryAnalyzer * qa = new aqQueryAnalyzer(frame, this->sqlQuery->GetValue().ToStdString());

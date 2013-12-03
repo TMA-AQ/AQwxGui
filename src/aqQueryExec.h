@@ -22,9 +22,7 @@ namespace gui {
     void setDatabase(const std::string& _database) { 
       this->database = _database; 
     }
-    void setQuery(const std::string& query) { 
-      this->sqlQuery->SetValue(query); 
-    }
+    void setQuery(const std::string& query);
   protected:
     void OnAnalyze(wxCommandEvent& e);
     void OnRun(wxCommandEvent& e);
