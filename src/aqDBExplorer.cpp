@@ -67,34 +67,62 @@ namespace gui {
   void aqDBExplorer::OnMouseClick(wxTreeEvent& evt)
   {
     aqTreeItemData * data = dynamic_cast<aqTreeItemData*>(this->GetItemData(evt.GetItem()));
-    if (data != nullptr)
+    if (evt.GetItem().GetID() == this->GetRootItem().GetID())
     {
       wxMenu menu;
       menu.SetClientData(&evt);
-      menu.Append(menu_t::ID_Connect, _("Connect"));
-      menu.Append(menu_t::ID_Import, _("Import"));
-      menu.Append(menu_t::ID_Export, _("Export"));
-      menu.Append(menu_t::ID_Check, _("Check"));
-      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, &aqDBExplorer::OnPopupClick, this, wxID_ANY);
+      menu.Append(root_menu_t::ID_Add_Database, _("Add Database"));
+      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, &aqDBExplorer::OnRootPopupClick, this, wxID_ANY);
       this->PopupMenu(&menu);
-      this->SelectItem(this->selectedItem);
-      this->SetItemBold(this->selectedItem);
+    }
+    else if (data != nullptr)
+    {
+      wxMenu menu;
+      menu.SetClientData(&evt);
+      menu.Append(db_menu_t::ID_Connect, _("Connect"));
+      menu.Append(db_menu_t::ID_Import, _("Import"));
+      menu.Append(db_menu_t::ID_Export, _("Export"));
+      menu.Append(db_menu_t::ID_Check, _("Check"));
+      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, &aqDBExplorer::OnDBPopupClick, this, wxID_ANY);
+      this->PopupMenu(&menu);
+      if (this->selectedItem != nullptr)
+      {
+        this->SelectItem(this->selectedItem);
+        this->SetItemBold(this->selectedItem);
+      }
     }
   }
   
-  void aqDBExplorer::OnPopupClick(wxCommandEvent& evt)
+  void aqDBExplorer::OnRootPopupClick(wxCommandEvent& evt)
+  {
+    wxMenu * menu = static_cast<wxMenu*>(evt.GetEventObject());
+    wxTreeEvent * treeEvt = static_cast<wxTreeEvent*>(menu->GetClientData());
+    wxMessageBox(_("NOT IMPLEMENTED"), _("AlgoQuest System"), wxOK | wxICON_INFORMATION, this);
+  }
+  
+  void aqDBExplorer::OnDBPopupClick(wxCommandEvent& evt)
   {
     wxMenu * menu = static_cast<wxMenu*>(evt.GetEventObject());
     wxTreeEvent * treeEvt = static_cast<wxTreeEvent*>(menu->GetClientData());
     aqTreeItemData * data = static_cast<aqTreeItemData*>(this->GetItemData(treeEvt->GetItem()));
     assert(data != nullptr);
-    qe->setDatabase(data->name);
-    this->mf->setStatusBar("Connected to " + data->name);
-    if (this->selectedItem != nullptr)
+    switch(evt.GetId())
     {
-      this->SetItemBold(this->selectedItem, false);
+    case db_menu_t::ID_Connect:
+      qe->setDatabase(data->name);
+      this->mf->setStatusBar("Connected to " + data->name);
+      if (this->selectedItem != nullptr)
+      {
+        this->SetItemBold(this->selectedItem, false);
+      }
+      selectedItem = treeEvt->GetItem();
+      break;
+    case db_menu_t::ID_Check:
+    case db_menu_t::ID_Export:
+    case db_menu_t::ID_Import:
+      wxMessageBox(_("NOT IMPLEMENTED"), _("AlgoQuest System"), wxOK | wxICON_INFORMATION, this);
+      break;
     }
-    selectedItem = treeEvt->GetItem();
   }
 
 }

@@ -1,6 +1,7 @@
 #include "aqMainFrame.h"
 #include "aqQueryExec.h"
 #include "aqDBExplorer.h"
+#include "aqQueryExplorer.h"
 
 using namespace aq::gui;
 
@@ -46,13 +47,24 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 
   //
   wxBoxSizer * box = new wxBoxSizer(wxHORIZONTAL);
-  wxSplitterWindow * splitter = new wxSplitterWindow(this, wxID_ANY);
-  aqQueryExec * qe = new aqQueryExec(splitter);
-  aqDBExplorer * db = new aqDBExplorer(splitter, this, qe);
-  splitter->SetSashGravity(0.5);
-  splitter->SetMinimumPaneSize(200);
-  box->Add(splitter, 1, wxALL | wxEXPAND, 0);
-  splitter->SplitVertically(db, qe, 10);
+  wxSplitterWindow * splitter1 = new wxSplitterWindow(this, wxID_ANY);
+  
+  wxPanel * qpan = new wxPanel(splitter1, wxID_ANY);
+  wxBoxSizer * b2 = new wxBoxSizer(wxHORIZONTAL);
+  wxSplitterWindow * splitter2 = new wxSplitterWindow(qpan, wxID_ANY);
+  aqQueryExec * qexe = new aqQueryExec(splitter2);
+  aqQueryExplorer * qexp = new aqQueryExplorer(splitter2, "queries.xml", qexe);
+  b2->Add(splitter2, 1, wxEXPAND, 0);
+  splitter2->SetSashGravity(1);
+  splitter2->SetMinimumPaneSize(100);
+  splitter2->SplitVertically(qexe, qexp, 2000); // FIXME
+  qpan->SetSizer(b2);
+
+  aqDBExplorer * db = new aqDBExplorer(splitter1, this, qexe);
+  splitter1->SetSashGravity(0);
+  splitter1->SetMinimumPaneSize(200);
+  box->Add(splitter1, 1, wxALL | wxEXPAND, 0);
+  splitter1->SplitVertically(db, qpan, 10);
   this->SetSizer(box);
 
 

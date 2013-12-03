@@ -19,7 +19,12 @@ namespace gui {
     };
   public:
     aqQueryExec(wxWindow * parent);
-    void setDatabase(const std::string& _database) { this->database = _database; }
+    void setDatabase(const std::string& _database) { 
+      this->database = _database; 
+    }
+    void setQuery(const std::string& query) { 
+      this->sqlQuery->SetValue(query); 
+    }
   protected:
     void OnAnalyze(wxCommandEvent& e);
     void OnRun(wxCommandEvent& e);

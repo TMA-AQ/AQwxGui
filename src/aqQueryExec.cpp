@@ -20,7 +20,7 @@ namespace gui {
 
     this->pan1 = new wxPanel(this->splitter, wxID_ANY);
     wxBoxSizer * bs1 = new wxBoxSizer(wxVERTICAL);
-    this->sqlQuery = new wxTextCtrl(pan1, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    this->sqlQuery = new wxTextCtrl(pan1, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_RICH);
     bs1->Add(this->sqlQuery, 1, wxALL | wxEXPAND, 0);
     pan1->SetSizer(bs1);
 
@@ -33,12 +33,16 @@ namespace gui {
     this->splitter->SplitHorizontally(this->pan1, this->pan2, this->GetSize().GetHeight() / 2); // FIXME : should be the panel size (and not the parent)
     this->splitter->Unsplit();
     
-    wxButton * analyzeButton = new wxButton(this, ID_Analyze, _("analyze"));
-    wxButton * runButton = new wxButton(this, ID_Ok, _("run"));
+    wxPanel * buttonPan = new wxPanel(this, wxID_ANY);
+    wxBoxSizer * b = new wxBoxSizer(wxHORIZONTAL);
+    wxButton * analyzeButton = new wxButton(buttonPan, ID_Analyze, _("analyze"));
+    wxButton * runButton = new wxButton(buttonPan, ID_Ok, _("run"));
+    b->Add(analyzeButton, 0, wxRIGHT | wxALIGN_RIGHT, 10);
+    b->Add(runButton, 0, wxRIGHT | wxALIGN_RIGHT, 10);
+    buttonPan->SetSizer(b);
 
     box->Add(splitter, 1, wxEXPAND | wxALL, 10);
-    box->Add(analyzeButton, 0, wxRIGHT | wxBOTTOM | wxALIGN_RIGHT, 10);
-    box->Add(runButton, 0, wxRIGHT | wxBOTTOM | wxALIGN_RIGHT, 10);
+    box->Add(buttonPan, 0, wxBOTTOM | wxALIGN_RIGHT, 10);
 
     // wxStreamToTextRedirector * redirect = new wxStreamToTextRedirector(this->sqlQuery);
 

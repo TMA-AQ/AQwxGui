@@ -3,6 +3,7 @@
 
 #include "aqQueryAnalyzer.h"
 #include "aqTnodeExplorer.h"
+#include "aqSyntaxColor.h"
 #include <aq/TreeUtilities.h>
 #include <aq/SQLPrefix.h>
 #include <aq/AQLParser.h>
@@ -32,8 +33,8 @@ aqQueryAnalyzer::aqQueryAnalyzer(wxWindow * parent, const std::string& query, aq
   wxBoxSizer * sqlSizer = new wxBoxSizer(wxVERTICAL);
   wxBoxSizer * aqlSizer = new wxBoxSizer(wxVERTICAL);
 
-  wxTextCtrl * sqlQuery = new wxTextCtrl(sqlPanel, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-  wxTextCtrl * aqlQuery = new wxTextCtrl(aqlPanel, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+  sqlQuery = new wxTextCtrl(sqlPanel, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_RICH);
+  aqlQuery = new wxTextCtrl(aqlPanel, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_RICH);
 
   sqlSizer->Add(sqlQuery, 1, wxEXPAND, 0);
   aqlSizer->Add(aqlQuery, 1, wxEXPAND, 0);
@@ -48,6 +49,10 @@ aqQueryAnalyzer::aqQueryAnalyzer(wxWindow * parent, const std::string& query, aq
     aq::util::tnodeToSelectStatement(*tree, ss);
     *sqlQuery << ss.to_string(aq::core::SelectStatement::output_t::SQL);
     *aqlQuery << ss.to_string(aq::core::SelectStatement::output_t::AQL);
+    aqSQLSyntaxColor sc1;
+    aqAQLSyntaxColor sc2;
+    sc1.colorize(sqlQuery);
+    sc2.colorize(aqlQuery);
   }
 
   queriesPanel->SetSizer(b2);
@@ -61,7 +66,7 @@ aqQueryAnalyzer::aqQueryAnalyzer(wxWindow * parent, const std::string& query, aq
   
   this->SetSizer(b1);
   b1->SetSizeHints(this);
-  
+
   splitter2->SplitVertically(sqlPanel, aqlPanel, queriesPanel->GetSize().GetWidth() / 2); // FIXME
   splitter1->SplitVertically(tnePanel, queriesPanel, this->GetSize().GetWidth() / 4); // FIXME
 }

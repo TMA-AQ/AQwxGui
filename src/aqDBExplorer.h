@@ -13,9 +13,14 @@ namespace gui {
   class aqDBExplorer : public wxTreeCtrl
   {
   public:
-    enum menu_t
+    enum root_menu_t
     {
-      ID_Connect,
+      ID_Add_Database = 1,
+    };
+
+    enum db_menu_t
+    {
+      ID_Connect = 1,
       ID_Import,
       ID_Export,
       ID_Check,
@@ -25,7 +30,8 @@ namespace gui {
   private:
     void addDatabase(const aq::Database& db);
     void OnMouseClick(wxTreeEvent& evt);
-    void OnPopupClick(wxCommandEvent& evt);
+    void OnRootPopupClick(wxCommandEvent& evt);
+    void OnDBPopupClick(wxCommandEvent& evt);
     aqMainFrame * mf;
     aqQueryExec * qe;
     std::string root;

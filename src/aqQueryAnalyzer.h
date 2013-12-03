@@ -18,6 +18,8 @@ namespace aq {
       ~aqQueryAnalyzer();
     private:
       aq::tnode * tree;
+      wxTextCtrl * sqlQuery;
+      wxTextCtrl * aqlQuery;
     };
 
   }
