@@ -7,6 +7,14 @@
 #include <aq/AQEngine.h>
 #include <sstream>
 
+#include <mysql_connection.h>
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/metadata.h>
+
 namespace aq {
 namespace gui {
 
@@ -16,6 +24,7 @@ namespace gui {
     wxBoxSizer * box = new wxBoxSizer(wxVERTICAL);
     
     this->splitter = new wxSplitterWindow(this, wxID_ANY);
+    this->splitter->SetWindowStyle(wxNO_BORDER);
     this->splitter->SetSashGravity(0.5);
     this->splitter->SetMinimumPaneSize(20); // Smalest size the
 
@@ -42,10 +51,8 @@ namespace gui {
     b->Add(runButton, 0, wxRIGHT | wxALIGN_RIGHT, 10);
     buttonPan->SetSizer(b);
 
-    box->Add(splitter, 1, wxEXPAND | wxALL, 10);
-    box->Add(buttonPan, 0, wxBOTTOM | wxALIGN_RIGHT, 10);
-
-    // wxStreamToTextRedirector * redirect = new wxStreamToTextRedirector(this->sqlQuery);
+    box->Add(splitter, 1, wxEXPAND | wxALL, 0);
+    box->Add(buttonPan, 0, wxBOTTOM | wxALIGN_RIGHT , 0);
 
     char * s = ::getenv("AQ_HOME");
     if (s != nullptr)
@@ -87,18 +94,20 @@ namespace gui {
 
     std::string query(this->sqlQuery->GetValue());
     
-    aq::Base            bd;
-    aq::Settings        settings;  
-    aq::AQEngine_Intf * aqEngine = nullptr;
-    const std::string   ident; 
-    bool                keepFiles = false;
-    bool                force = false;
-
     if ((this->root != "") && (this->database != ""))
     {
+      aq::Base            bd;
+      aq::Settings        settings;  
+      aq::AQEngine_Intf * aqEngine = nullptr;
+      const std::string   ident; 
+      bool                keepFiles = false;
+      bool                force = false;
+
       settings.initPath("E:/AQ_DB/" + this->database); // TODO
       aq::Base::load(settings.dbDesc, bd);
+
       aqEngine = new aq::AQEngineSystem(bd, settings);
+      // aqEngine = new aq::AQEngineWindows(bd, settings);
 
       boost::shared_ptr<aq::RowWritter_Intf> resultHandler(new aqResultHandler(*this->result));
       aq::QueryResolver::prepareQuery(query, ident, settings, force);
@@ -106,8 +115,61 @@ namespace gui {
 
       delete aqEngine;
 
-      this->splitter->SplitHorizontally(this->pan1, this->pan2, this->GetSize().GetHeight() / 2); // FIXME : should be the panel size (and not the parent)
     }
+    else
+    {
+
+      try
+      {
+
+        std::string query("select id, v2, v3 from t1;");
+        std::string url("localhost");
+        std::string user("tma");
+        std::string pass("AlgoQuest");
+        std::string database("test");
+        sql::Driver * driver = get_driver_instance();
+        sql::Connection * con = driver->connect(url, user, pass);
+        con->setSchema(database);
+        sql::Statement * stmt = con->createStatement();
+        sql::ResultSet * res = stmt->executeQuery(query);
+        sql::ResultSetMetaData * meta = res->getMetaData();
+        for (size_t c = 1; c <= meta->getColumnCount(); c++)
+        {
+          auto & s = meta->getColumnName(c);
+          this->result->AppendColumn(s.c_str());
+        }
+        size_t n = 0;
+        wxListItem item;
+        item.m_mask = wxLIST_MASK_TEXT;
+        while (res->next())
+        {
+          if (this->result->GetColumn(0, item))
+          {
+            auto & s = res->getString(item.GetText().ToStdString());
+            this->result->InsertItem(n, s.c_str());
+          }
+          for (size_t c = 1; c < this->result->GetColumnCount(); c++)
+          {
+            if (this->result->GetColumn(c, item))
+            {
+              auto & s = res->getString(item.GetText().ToStdString());
+              this->result->SetItem(n, c, s.c_str());
+            }
+          }
+          n += 1;
+        }
+
+      }
+      catch (const sql::SQLException& ex)
+      {
+        wxMessageBox(ex.what(), "ERROR");
+      }
+
+    }
+
+    this->splitter->SplitHorizontally(this->pan1, this->pan2, this->GetSize().GetHeight() / 2); // FIXME : should be the panel size (and not the parent)
+
+
   }
 
 }

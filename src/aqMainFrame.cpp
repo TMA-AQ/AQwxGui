@@ -2,6 +2,8 @@
 #include "aqQueryExec.h"
 #include "aqDBExplorer.h"
 #include "aqQueryExplorer.h"
+#include "aqTestDatabases.h"
+#include <aq/AQLParser.h>
 
 using namespace aq::gui;
 
@@ -37,11 +39,25 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnAbout, this, ID_About);
   menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnQuit, this, ID_Quit);
 
+  wxMenu * menuTest = new wxMenu;
+  menuTest->Append(ID_Test, _("&Run"));
+  menuTest->Bind(wxEVT_COMMAND_MENU_SELECTED, &aqMainFrame::OnTest, this, ID_Test);
+
   wxMenuBar *menuBar = new wxMenuBar;
   menuBar->Append(menuFile, _("&File"));
+  menuBar->Append(menuTest, _("&Test"));
 
   this->SetMenuBar(menuBar);
   
+  // Tools Bar
+  wxToolBar * toolBar = new wxToolBar(this, wxID_ANY);
+  wxImage::AddHandler(new wxPNGHandler);
+  wxComboBox * cb = new wxComboBox(toolBar, wxID_ANY);
+  cb->AppendString("prout1");
+  cb->AppendString("prout2");
+  toolBar->AddControl(cb);
+  this->SetToolBar(toolBar);
+
   // Logs
   this->logsFrame = new aqLogsFrame(this);
 
@@ -55,29 +71,31 @@ aqMainFrame::aqMainFrame(const wxString& title, const wxPoint& pos, const wxSize
   aqQueryExec * qexe = new aqQueryExec(splitter2);
   aqQueryExplorer * qexp = new aqQueryExplorer(splitter2, "queries.xml", qexe);
   b2->Add(splitter2, 1, wxEXPAND, 0);
+  splitter2->SetWindowStyle(wxNO_BORDER);
   splitter2->SetSashGravity(1);
   splitter2->SetMinimumPaneSize(100);
   splitter2->SplitVertically(qexe, qexp, 2000); // FIXME
   qpan->SetSizer(b2);
 
   aqDBExplorer * db = new aqDBExplorer(splitter1, this, qexe);
+  splitter1->SetWindowStyle(wxNO_BORDER);
   splitter1->SetSashGravity(0);
   splitter1->SetMinimumPaneSize(200);
   box->Add(splitter1, 1, wxALL | wxEXPAND, 0);
   splitter1->SplitVertically(db, qpan, 10);
   this->SetSizer(box);
 
-
   // Status Bar
   this->CreateStatusBar();
   this->SetStatusText( _("no database connection") );
 
   // Icon
-  // this->SetIcon(wxIcon(_T("logo.jpg")));
-  
-  // this->OnProperties(wxCommandEvent());
+  this->SetIcon(wxIcon("AQ.ico", wxBITMAP_TYPE_ICO));
 
   this->Centre();
+
+  wxCommandEvent e;
+  this->OnTest(e);
 }
 
 aqMainFrame::~aqMainFrame()
@@ -131,4 +149,14 @@ void aqMainFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 void aqMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
   wxMessageBox(_("AlgoQuest System"), _("About AlgoQuest System"), wxOK | wxICON_INFORMATION, this);
+}
+
+void aqMainFrame::OnTest(wxCommandEvent& WXUNUSED(event))
+{
+  //wxFrame * frame = new wxFrame(nullptr, wxID_ANY, _("AlgoQuest Unitary Tests"), wxDefaultPosition, wxSize(1080, 720));
+  //wxBoxSizer * box = new wxBoxSizer(wxVERTICAL);
+  //aqTestDatabases * testDB = new aqTestDatabases(frame);
+  //box->Add(testDB);
+  //frame->SetSizer(box);
+  //frame->Show();
 }

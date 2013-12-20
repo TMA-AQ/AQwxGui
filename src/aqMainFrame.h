@@ -23,6 +23,8 @@ protected:
   void OnQuit(wxCommandEvent& event);
   void OnAbout(wxCommandEvent& event);
 
+  void OnTest(wxCommandEvent& event);
+
 private:
   wxFrame * settingsFrame;
   aqLogsFrame * logsFrame;
@@ -38,6 +40,7 @@ enum
   ID_Logs,
   ID_Open,
   ID_About,
+  ID_Test,
 };
 
 }
