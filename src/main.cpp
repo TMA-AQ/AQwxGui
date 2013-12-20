@@ -20,7 +20,7 @@ class aqGui: public wxApp
   virtual bool OnInit();
   int parseOptions(std::ostream& os);
   void benchmark();
-  std::shared_ptr<TestCase::opt_t> opt;
+  boost::shared_ptr<TestCase::opt_t> opt;
   bool launch_benchmark;
 };
 

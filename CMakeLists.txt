@@ -16,6 +16,7 @@ include_directories(
   ${wxWidgets_INCLUDE_DIRS}
   $ENV{AQUTIL_SOURCE_DIR}
   $ENV{AQQUERY_RESOLVER_SOURCE_DIR}
+  $ENV{AQTESTS_SOURCE_DIR}
 )
 
 link_directories(
@@ -24,6 +25,7 @@ link_directories(
   ${wxWidgets_LIBRARY_DIRS}
   $ENV{AQUTIL_LIBRARY_DIR}
   $ENV{AQQUERY_RESOLVER_LIBRARY_DIR}
+  $ENV{AQTESTS_LIBRARY_DIR}
 )
 
 set(CMAKE_CXX_FLAGS "-O0 -ggdb -std=c++11 ${wxWidgets_CXXFLAGS}")
@@ -36,8 +38,10 @@ set_target_properties(aq-gui PROPERTIES MACOSX_BUNDLE TRUE)
 
 target_link_libraries(
   aq-gui
+  aq-tests
   aq_query_resolver
   aq_util
   ${Boost_LIBRARIES}
   ${wxWidgets_LIBRARIES}
+  mysqlcppconn
 )

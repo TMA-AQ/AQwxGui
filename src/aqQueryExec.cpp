@@ -135,7 +135,7 @@ namespace gui {
         sql::ResultSetMetaData * meta = res->getMetaData();
         for (size_t c = 1; c <= meta->getColumnCount(); c++)
         {
-          auto & s = meta->getColumnName(c);
+          const auto & s = meta->getColumnName(c);
           this->result->AppendColumn(s.c_str());
         }
         size_t n = 0;
@@ -145,14 +145,14 @@ namespace gui {
         {
           if (this->result->GetColumn(0, item))
           {
-            auto & s = res->getString(item.GetText().ToStdString());
+            const auto & s = res->getString(item.GetText().ToStdString());
             this->result->InsertItem(n, s.c_str());
           }
           for (size_t c = 1; c < this->result->GetColumnCount(); c++)
           {
             if (this->result->GetColumn(c, item))
             {
-              auto & s = res->getString(item.GetText().ToStdString());
+              const auto & s = res->getString(item.GetText().ToStdString());
               this->result->SetItem(n, c, s.c_str());
             }
           }
