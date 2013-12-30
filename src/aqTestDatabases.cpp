@@ -70,7 +70,7 @@ namespace helper
 
 }
 
-aqTestDatabases::aqTestDatabases(wxWindow * parent, std::shared_ptr<aq::TestCase::opt_t> _opt)
+aqTestDatabases::aqTestDatabases(wxWindow * parent, boost::shared_ptr<aq::TestCase::opt_t> _opt)
   : wxPanel(parent, wxID_ANY), opt(_opt)
 { 
   wxBoxSizer * box = new wxBoxSizer(wxVERTICAL);
@@ -239,7 +239,7 @@ aqTestDatabases::aqTestDatabases(wxWindow * parent, std::shared_ptr<aq::TestCase
 
       wxBoxSizer * bs = new wxBoxSizer(wxHORIZONTAL);
       wxSizerFlags flags;
-      flags.Bottom().Right().Border(wxRIGHT, 10);
+      flags.Bottom().Right().Border(wxRIGHT | wxBOTTOM, 10);
       bs->Add(bReset, flags);
       bs->Add(bSave, flags);
       bs->Add(bOk, flags);
@@ -249,11 +249,13 @@ aqTestDatabases::aqTestDatabases(wxWindow * parent, std::shared_ptr<aq::TestCase
       b->SetSizeHints(buttons);
     }
 
-    box->Add(genOpt, 0, wxALL | wxEXPAND, 10);
-    box->Add(aqOpt, 0, wxALL | wxEXPAND, 10);
-    box->Add(mysqlOpt, 0, wxALL | wxEXPAND, 10);
-    box->Add(gauges, 0, wxALL | wxEXPAND, 10);
-    box->Add(buttons, 1, wxBOTTOM | wxEXPAND, 10);
+    wxSizerFlags flags;
+    flags.Expand().Border(wxALL, 10);
+    box->Add(genOpt, flags);
+    box->Add(aqOpt, flags);
+    box->Add(mysqlOpt, flags);
+    box->Add(gauges, flags);
+    box->Add(buttons, flags.Proportion(1).Border(wxBOTTOM, 0));
 
     config->SetSizer(box);
     box->SetSizeHints(config);

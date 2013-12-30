@@ -19,7 +19,7 @@ namespace gui {
   class aqTestDatabases : public wxPanel, public DatabaseGenerator::handle_t
   {
   public:
-    aqTestDatabases(wxWindow * parent, std::shared_ptr<aq::TestCase::opt_t> opt);
+    aqTestDatabases(wxWindow * parent, boost::shared_ptr<aq::TestCase::opt_t> opt);
     void run(boost::shared_ptr<aq::DatabaseGenerator> gen, boost::shared_ptr<aq::TestCase> tc, std::istream& is, const std::list<std::string>& tables);
     void push(const aq::DatabaseGenerator::handle_t::tables_t& tables);
   protected:
@@ -34,7 +34,7 @@ namespace gui {
     wxListView * lvTables;
     boost::shared_ptr<aq::TestCase> cmpQueries;
     std::list<boost::shared_ptr<QueryGenerator> > queriesGenertors;
-    std::shared_ptr<TestCase::opt_t> opt;
+    boost::shared_ptr<TestCase::opt_t> opt;
     
     wxComboCtrl * qfName;
     wxSpinCtrl * nbTables;
