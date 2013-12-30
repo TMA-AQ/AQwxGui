@@ -1,8 +1,11 @@
 #include "aqMainFrame.h"
 #include "aqTestDatabases.h"
+#include <aq/Logger.h>
 #include <aq/verbs/VerbFactory.h>
+#include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 namespace po = boost::program_options;
 
@@ -18,8 +21,10 @@ namespace gui {
 class aqGui: public wxApp
 {
   virtual bool OnInit();
+  
   int parseOptions(std::ostream& os);
   void benchmark();
+
   std::shared_ptr<TestCase::opt_t> opt;
   bool launch_benchmark;
 };
@@ -115,11 +120,13 @@ int aqGui::parseOptions(std::ostream& os)
 
     //
     // if aq.ini exists in current directory, use it as default settings
-    settings.iniFile = "aq.ini";
-    boost::filesystem::path iniFile(settings.iniFile);
+    // settings.iniFile = "aq.ini";
+    boost::filesystem::path iniFile("aq.ini");
     if (boost::filesystem::exists(iniFile))
     {
-      settings.load(settings.iniFile);
+      // settings.load(settings.iniFile);
+      std::ifstream fin("aq.ini");
+      opt->parse(fin);
     }
 
     //
@@ -133,7 +140,7 @@ int aqGui::parseOptions(std::ostream& os)
         if ((i + 1) < argc)
         {
           propertiesFile = argv[i+1];
-          settings.load(propertiesFile);
+          // settings.load(propertiesFile);
         }
       }
 
@@ -200,26 +207,6 @@ int aqGui::parseOptions(std::ostream& os)
 
 void aqGui::benchmark()
 {
-  //// algoquest options
-  //opt->aq_name = "algoquest_tmp";
-  //opt->aq_path = "E:/AQ_DB/";
-
-  //// mysql options
-  //opt->mysql_host = "localhost";
-  //opt->mysql_name = "algoquest";
-  //opt->mysql_user = "tma";
-  //opt->mysql_pass = "AlgoQuest";
-
-  //// generation options
-  //opt->generator_filename = "queries.gen";
-  //opt->max_value = 1100;
-  //opt->min_value = 1000;
-  //opt->nb_rows = 10;
-  //opt->nb_tables = 2;
-  //opt->point_mode = DatabaseGenerator::point_mode_t::MIN_MAX;
-  //opt->gen_mode = DatabaseGenerator::gen_mode_t::INTERSECT;
-  //opt->value_mode = DatabaseGenerator::value_mode_t::RANDOM;
-
   wxFrame * frame = new wxFrame(nullptr, wxID_ANY, _("AlgoQuest Benchmark"), wxDefaultPosition, wxSize(1080, 720));
   wxBoxSizer * box = new wxBoxSizer(wxVERTICAL);
   aqTestDatabases * testDB = new aqTestDatabases(frame, opt);

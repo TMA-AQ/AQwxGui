@@ -9,6 +9,10 @@
 #include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
 
+#if defined(_DEBUG)
+// #include <vld.h>
+#endif
+
 using namespace aq::gui;
 
 namespace helper
@@ -433,8 +437,8 @@ void aqTestDatabases::OnOk(wxCommandEvent& WXUNUSED(evt))
   settings.aqLoader = "aq-loader.exe";
   try 
   { 
-    std::shared_ptr<DatabaseIntf> db1(new AlgoQuestDatabase(settings));
-    std::shared_ptr<DatabaseIntf> db2(new MySQLDatabase(opt->mysql_host, opt->mysql_user, opt->mysql_pass, opt->mysql_name));
+    boost::shared_ptr<DatabaseIntf> db1(new AlgoQuestDatabase(settings));
+    boost::shared_ptr<DatabaseIntf> db2(new MySQLDatabase(opt->mysql_host, opt->mysql_user, opt->mysql_pass, opt->mysql_name));
     tc->add(db1);
     tc->add(db2);
 
